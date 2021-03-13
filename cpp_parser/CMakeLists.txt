@@ -6,8 +6,6 @@ project( cpp_parser)
 
 add_executable( ${PROJECT_NAME} cpp_parser.cpp)
 
-# # Add debug flag
-# target_compile_definitions(${PROJECT_NAME} PUBLIC DEBUG)
 
 # Set required C++11 flag
 if(CMAKE_VERSION VERSION_LESS "3.1")
