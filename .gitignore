@@ -2,3 +2,6 @@
 *data/*
 **data/*
 *.m~
+
+**/build
+*.json
