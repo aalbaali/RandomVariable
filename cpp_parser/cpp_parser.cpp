@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <array>
 
 int getNumberOfColumns( std::string &header){
     std::stringstream ss( header);
@@ -33,18 +35,33 @@ int main(){
     // Get number of columns
     const int num_cols = getNumberOfColumns( line);
     std::cout << "Number of columns:\t" << num_cols << std::endl;
-    // // String stream to parse the string line
-    // std::stringstream ss;
-
-    // ss.str( line);
-    // std::string var_name;
-    // while( ss){
-    //     ss >> var_name;
-    //     std::cout << var_name << "\n";
-    // }
-    // std::cout << std::endl;
-
     
+    // Create a (dynamic) vector that includes a vector of size num_cols
+    std::vector< std::vector <double> > data;
+
+    // Go over data and store
+    for( int i = 0; std::getline( infile, line); i++){
+        // Assign line to string stream
+        std::stringstream ss( line);
+        
+        // Data at the current row
+        std::vector< double> data_row (num_cols);        
+        for( int j = 0; ss >> data_row[j]; j++){
+            // Do nothing (it's already assigned)
+        }
+        // Store row vector
+        data.push_back( data_row);
+    }
+
+    // ************************************************************
+    // Go over data vector and display results
+    std::cout << "Data:\n" << std::endl;
+    for( auto i : data){
+        for( auto j : i){
+            std::cout << j << "\t";
+        }
+        std::cout << std::endl;
+    }
 
     infile.close();
 }
