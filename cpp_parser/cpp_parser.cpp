@@ -17,9 +17,8 @@ int getNumberOfColumns( std::string &header){
     return i;
 }
 
-int main(){
-    const char* file_name = "/home/aalbaali/Documents/Code_base/Examples/Data_generator/linear_system/data/msd_ground_truth.txt";
-
+template< typename T = double>
+std::vector< std::vector< T>> importData( const char* file_name){
     // Open file stream
     std::ifstream infile( file_name);
 
@@ -37,7 +36,7 @@ int main(){
     std::cout << "Number of columns:\t" << num_cols << std::endl;
     
     // Create a (dynamic) vector that includes a vector of size num_cols
-    std::vector< std::vector <double> > data;
+    std::vector< std::vector <T> > data;
 
     // Go over data and store
     for( int i = 0; std::getline( infile, line); i++){
@@ -45,7 +44,7 @@ int main(){
         std::stringstream ss( line);
         
         // Data at the current row
-        std::vector< double> data_row (num_cols);        
+        std::vector< T> data_row (num_cols);        
         for( int j = 0; ss >> data_row[j]; j++){
             // Do nothing (it's already assigned)
         }
@@ -53,6 +52,16 @@ int main(){
         data.push_back( data_row);
     }
 
+    infile.close();
+
+    return data;
+}
+int main(){
+    const char* file_name = "/home/aalbaali/Documents/Code_base/Examples/Data_generator/linear_system/data/msd_ground_truth.txt";
+
+    std::cout << file_name << std::endl;
+    auto data = importData( file_name);
+    
     // ************************************************************
     // Go over data vector and display results
     std::cout << "Data:\n" << std::endl;
@@ -63,5 +72,5 @@ int main(){
         std::cout << std::endl;
     }
 
-    infile.close();
+    
 }
