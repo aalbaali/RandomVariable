@@ -31,7 +31,9 @@ std::vector< std::vector< T>> importData( const std::string &file_name){
 
     // Get number of columns
     const int num_cols = getNumberOfColumns( line);
+#ifdef DEBUG
     std::cout << "Number of columns:\t" << num_cols << std::endl;
+#endif
     
     // Create a (dynamic) vector that includes a vector of size num_cols
     std::vector< std::vector <T> > data;
