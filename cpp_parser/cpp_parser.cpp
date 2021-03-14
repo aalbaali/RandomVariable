@@ -1,10 +1,10 @@
 #include <iostream>
 #include "data_parser.h"
 
-int main(){
-    const char* file_name = "/home/aalbaali/Documents/Code_base/Examples/Data_generator/linear_system/data/msd_ground_truth.txt";
+int main(int argc, char *argv[]){
+    std::string file_name = "/home/aalbaali/Documents/Code_base/Examples/Data_generator/linear_system/data/msd_ground_truth.txt";
 
-    std::cout << file_name << std::endl;
+    std::cout << "Filename: " << file_name << std::endl;
     auto data = importData( file_name);
     
     // ************************************************************

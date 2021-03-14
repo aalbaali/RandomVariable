@@ -16,7 +16,7 @@ int getNumberOfColumns( std::string &header){
 }
 
 template< typename T = double>
-std::vector< std::vector< T>> importData( const char* file_name){
+std::vector< std::vector< T>> importData( const std::string &file_name){
     // Open file stream
     std::ifstream infile( file_name);
 
