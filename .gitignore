@@ -1,6 +1,6 @@
 *.asv
 *data/*
-**data/*
+**/data/*
 *.m~
 
 **/build
