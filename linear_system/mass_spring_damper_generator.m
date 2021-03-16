@@ -9,6 +9,9 @@ close all;
 
 % For repeatability
 rng( 'default');
+addpath('..');
+% Data directories (exporting locations)
+data_dir = "/home/aalbaali/Documents/Data/Data_generator/linear_system";
 %% Simulation parameters
 % Simulation frequency
 f_sim = 100;
@@ -92,11 +95,11 @@ xlabel( '$t_{k}$ [s]', 'Interpreter', 'latex', 'FontSize', 14);
 %% Generate text file
 % Interoceptive measurements
 generateTextFile( t, [ u_noisy; repelem( var_u, 1, length( t))], ...
-    { 'u_1', 'var_u1'}, 'data/msd_acc.txt');
+    { 'u_1', 'var_u1'}, fullfile(data_dir, 'msd_acc.txt'));
 
 generateTextFile( t_y, [ y_noisy; repelem( var_y, 1, length( t_y))], ...
-    { 'y_1', 'var_y1'}, 'data/msd_pos.txt');
+    { 'y_1', 'var_y1'}, fullfile(data_dir, 'msd_pos.txt'));
 
 % Ground truth
 generateTextFile( t, x_true, ...
-    { 'x_1', 'x_2'}, 'data/msd_ground_truth.txt');
+    { 'x_1', 'x_2'}, fullfile( data_dir, 'msd_ground_truth.txt'));
