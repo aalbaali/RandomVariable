@@ -6,7 +6,7 @@ int main(int argc, char *argv[]){
     std::string file_name = "/home/aalbaali/Documents/Data/Data_generator/linear_system/msd_ground_truth.txt";
 
     std::cout << "Filename: " << file_name << std::endl;
-    auto data = RVIO::importData( file_name);
+    auto data = RVIO::read( file_name);
     
     // ************************************************************
     // Go over data vector and display results

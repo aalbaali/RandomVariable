@@ -17,7 +17,13 @@ namespace RVIO{
     }
 
     template< typename T = double>
-    std::vector< std::vector< T>> importData( const std::string &file_name){
+    std::vector< std::vector< T>> read( const std::string &file_name){
+        // This function reads the data from the text file. The first line is a header file and will be used to count the number of columns. E.g., for a random variable of dimension 2, the header may look like
+        //  Tim     x_1     x_2     cov_11  cov_21  cov_12  cov_22.
+        // 
+        // @params[in] const std::string file_name
+        //      Full file path to read data from.
+        
         // Open file stream
         std::ifstream infile( file_name);
 
@@ -58,11 +64,17 @@ namespace RVIO{
         return data;
     }
 
-
-
     template<typename T>
-    void LogMeasurements(std::vector<T> meas_vec, std::vector<std::string> header_str, const std::string file_name){
-        // meas_vec is a vector of random variable objects. Each random variable object contains a time of measurement, mean value, and covariance
+    void write(std::vector<T> meas_vec, std::vector<std::string> header_str, const std::string file_name){
+        // A function that writes the data to a text file of the appropriate format.
+        // 
+        // @params[in] meas_vec
+        //      A vector of random variables (an object of class RandomVariable). This class has a `meas()' field and `cov()' field.
+        // @param[in] header_str
+        //      A vector of header titles.
+        // @param[in] file_name
+        //      Full path to the .txt file to be exported.
+
         std::ofstream outstrm(file_name);
         // Write the header
         for( auto h : header_str){
