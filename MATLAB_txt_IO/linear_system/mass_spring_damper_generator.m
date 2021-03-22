@@ -39,7 +39,7 @@ func_u = @( t) cos( 2 * pi * f_u * t);
 
 % Correction frequency
 f_y = 1;
-% First correction 
+% First correction time
 t_y_0 = 0.5; %1 / f_y;
 % Correction matrix
 C = [ 1, 0];
