@@ -17,7 +17,9 @@ function generateTextFile( time_array, value_array, header_cell, file_name)
     
     % Generate a text file. fh = file_handle
     fh = fopen( file_name, 'w');
-        
+    if fh < 0
+        error('Error opening file');
+    end
     % Lambda function that takes a string and converts to sprintf with a
     % tab after it
     sprintftab = @( str) sprintf( '%s\\t', str);
