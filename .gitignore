@@ -8,3 +8,5 @@
 
 *.txt
 !CMakeLists.txt
+
+*TODO.txt
