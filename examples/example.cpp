@@ -12,14 +12,14 @@ const std::string filename_out = "../test_out.txt";
 
 // Random variable class
 //      Measurement in
-typedef RV::RandomVariable< 2> MeasVel;
+typedef RandomVariable< 2> MeasVel;
 //      Value out
 const size_t dof_out = 2;   // Degrees of freedom of the output RV (this will be used as the size of the covariance matrix)
 const size_t cols_out = 2;  // Number of colums of the mean of the output RV
 const size_t rows_out = 1;  // Number of rows of the mean of the output RV
 typedef Eigen::Matrix<double, cols_out, 1> MeanOut;
 typedef Eigen::Matrix<double, dof_out, dof_out> CovOut;
-typedef RV::RandomVariable< dof_out> RvMeanOut;
+typedef RandomVariable< dof_out> RvMeanOut;
 
 int main(int argc, char *argv[]){    
     // Import measurements
