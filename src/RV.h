@@ -3,35 +3,36 @@
 
 // Class of measurements. Contains i) measurement, ii) covariance, and iii) time of the measurement.
 // Change the name of the class to RandomVariable (it just includes the mean, covariance, and time step)
-template<size_t _MeanRows, size_t _MeanCols = 1, size_t dof = _MeanRows,typename T = double>
+template<size_t _MeanRows, size_t _MeanCols = 1, size_t _dof = _MeanRows,typename _T = double>
 class RandomVariable{
     public:
         RandomVariable(){
-            _mean = Eigen::Matrix< T, _MeanRows, _MeanCols>::Zero();
-            _cov  = Eigen::Matrix< T, dof, dof>::Zero();
+            _mean = Eigen::Matrix< _T, _MeanRows, _MeanCols>::Zero();
+            _cov  = Eigen::Matrix< _T, _dof, _dof>::Zero();
             _t    = -1.0;
         }
 
-        RandomVariable( Eigen::Matrix< T, _MeanRows, _MeanCols> mean_in,
-            Eigen::Matrix< T, dof, dof> cov_in = Eigen::Matrix< T, dof, dof>::Identity(), double time_in = -1){
+        RandomVariable( Eigen::Matrix< _T, _MeanRows, _MeanCols> mean_in,
+            Eigen::Matrix< _T, _dof, _dof> cov_in = Eigen::Matrix< _T, _dof, _dof>::Identity(), bool cov_is_global_in = true, double time_in = -1){
             // Constructor that takes measurement and covariance (with default values).
-            _mean = mean_in;
-            _cov  = cov_in;
-            _t    = time_in;
+            _mean           = mean_in;
+            _cov            = cov_in;
+            _cov_is_global  = cov_is_global_in;
+            _t              = time_in;
         }
 
         template<typename VectorT>
         RandomVariable( std::vector<VectorT> row_of_raw_data){
             double time = row_of_raw_data[ 0];
             Eigen::Matrix< double, _MeanRows, _MeanCols> mean;
-            Eigen::Matrix< double, dof, dof> cov;
+            Eigen::Matrix< double, _dof, _dof> cov;
             for( size_t i = 0; i < _MeanRows; i++){
                 mean( i) = row_of_raw_data[ i + 1];
-                for( size_t j = 0; j < dof; j++){
+                for( size_t j = 0; j < _dof; j++){
                     // 1 : for time
                     // _MeanRows * _MeanCols : size of the mean
                     // i * Size : skipping each column of the matrix
-                    cov( i, j) = row_of_raw_data[ 1 + _MeanRows * _MeanCols + i * dof + j];
+                    cov( i, j) = row_of_raw_data[ 1 + _MeanRows * _MeanCols + i * _dof + j];
                 }
             }
             // Store objects
@@ -42,24 +43,43 @@ class RandomVariable{
         }
 
         // Getters
-        Eigen::Matrix< T, _MeanRows, _MeanCols> mean(){ return _mean;}
-        Eigen::Matrix< T, dof, dof> cov(){ return  _cov;}
+        Eigen::Matrix< _T, _MeanRows, _MeanCols> mean(){ return _mean;}
+        Eigen::Matrix< _T, _dof, _dof> cov(){ return  _cov;}
         double time(){ return _t;}
-
+        bool covIsGlobal(){ return _cov_is_global;}
         // Setters
-        void setMean( Eigen::Matrix< T, _MeanRows, _MeanCols> mean_in){
+        void setMean( Eigen::Matrix< _T, _MeanRows, _MeanCols> mean_in){
             this->_mean = mean_in;
         }
 
-        void setCov( Eigen::Matrix<T, dof, dof> cov_in){
+        void setCov( Eigen::Matrix<_T, _dof, _dof> cov_in){
             this->_cov = cov_in;
         }
+
         void setTime( double time_in){ _t = time_in;}
 
-    private:
+        // Set covariance type (global/local). This is relavent to manifold random varaibles. Default is true (for RVs on the Euclidean space)
+        void setCovIsGlobal( bool cov_is_global_in){
+            this->_cov_is_global = cov_is_global_in;
+        }
+        // Get the template parameters (doesn't occupy space)        
+        static constexpr size_t MeanRows()  noexcept{
+            return _MeanRows;
+        }
+        static constexpr size_t MeanCols() noexcept{ 
+                return _MeanCols;
+        }
+        static constexpr size_t Dof()      noexcept{ 
+                return _dof;
+        }
+    private:                
         Eigen::Matrix< double, _MeanRows, _MeanCols> _mean;
-        Eigen::Matrix< double, dof, dof> _cov;
+        Eigen::Matrix< double, _dof, _dof> _cov;
 
         // Time of measurement
         double _t;
+
+        // Global/local covariance (relavent to manifold RVs)
+        bool _cov_is_global = true;
+    public:
 };

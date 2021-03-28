@@ -21,6 +21,10 @@ typedef Eigen::Matrix<double, cols_out, 1> MeanOut;
 typedef Eigen::Matrix<double, dof_out, dof_out> CovOut;
 typedef RandomVariable< dof_out> RvMeanOut;
 
+
+//TEMP
+#include <array>
+
 int main(int argc, char *argv[]){    
     // Import measurements
     std::vector< MeasVel> meas_in = RV::IO::import< MeasVel>( filename_in);
@@ -61,4 +65,5 @@ int main(int argc, char *argv[]){
         }
     }
     RV::IO::write( meas_out, header, filename_out);
+
 }
