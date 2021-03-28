@@ -5,6 +5,7 @@
 #include "Eigen/Dense"
 
 #include "RV.h"
+#include "RVIO.h"
 
 const std::string filename_in  = "/home/aa/Documents/Data/Data_generator/SE2/meas_vel.txt";
 const std::string filename_out = "../test_out.txt";
