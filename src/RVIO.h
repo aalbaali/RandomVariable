@@ -71,7 +71,7 @@ namespace RV{
         }
 
         template<typename T>
-        void WriteHeader(std::ostream& outstrm, size_t num_meas, std::string mean_symbol = "m"){
+        void WriteHeader(std::ostream& outstrm, size_t num_meas, std::string mean_symbol){
             // This is a templated function that returns the header string. The string contains:
             //  mean_size : T::MeanRows(), T::MeanRows() 
             //      Size of the mean element
@@ -123,7 +123,7 @@ namespace RV{
             outstrm << std::string( out_width * (T::MeanRows() * T::MeanCols() + std::pow(T::Dof(), 2) + 2), '=') << std::endl;
         }
         template<typename T>
-        void write(std::vector<T> meas_vec, std::vector<std::string> header_str, const std::string file_name){
+        void write(std::vector<T> meas_vec, const std::string file_name, std::string mean_symbol = "m"){
             // A function that writes the data to a text file of the appropriate format.
             // 
             // @params[in] meas_vec
@@ -135,7 +135,7 @@ namespace RV{
 
             std::ofstream outstrm(file_name);
             // Write header
-            WriteHeader<T>( outstrm, meas_vec.size());
+            WriteHeader<T>( outstrm, meas_vec.size(), mean_symbol);
             // Write the header
             // for( auto h : header_str){
             //     outstrm << h << '\t';
