@@ -148,14 +148,14 @@ namespace RV{
                 outstrm << std::left << std::setw(out_width) << std::setprecision(out_precision) << rv.time(); 
                 
                 // Write mean value (estimate)
-                for(size_t i = 0; i < rv.MeanRows(); ++i){
-                    for(size_t j = 0; j < rv.MeanCols(); ++j){
+                for(size_t i = 0; i < T::MeanRows(); ++i){
+                    for(size_t j = 0; j < T::MeanCols(); ++j){
                         outstrm << std::setw(out_width) << std::setprecision(out_precision) << rv.mean()(i, j);
                     }
                 }
                 // Write covariance (column major)
-                for(size_t j = 0; j < rv.Dof(); j++){
-                    for(size_t i = 0; i < rv.Dof(); i++){
+                for(size_t j = 0; j < T::Dof(); j++){
+                    for(size_t i = 0; i < T::Dof(); i++){
                         outstrm << std::setw(out_width) << std::setprecision(out_precision) << rv.cov()(i,j);
                     }
                 }
