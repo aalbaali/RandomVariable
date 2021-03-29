@@ -2,10 +2,14 @@
 #include <fstream> // Used to read file
 #include <sstream> // Used for stringstream
 #include <iomanip> // For nice outputs (setw)
+#include <limits>  // Get the maximum number of digits for double precision
 
 #include <vector>
 #include <string>
 
+// Width of each column
+const size_t out_precision = std::numeric_limits< double >::max_digits10;
+const size_t out_width     = out_precision + 5;
 
 namespace RV{
     namespace IO{    
@@ -67,6 +71,58 @@ namespace RV{
         }
 
         template<typename T>
+        void WriteHeader(std::ostream& outstrm, size_t num_meas, std::string mean_symbol = "m"){
+            // This is a templated function that returns the header string. The string contains:
+            //  mean_size : T::MeanRows(), T::MeanRows() 
+            //      Size of the mean element
+            //  dof       : T::Dof()    
+            //      Degrees of freedom of the random variable
+            //  num_meas  : num_meas_in
+            //      Number of measurements
+            // The column headers will be of the form
+            //
+            //  Time m_11 m_21 m_31 m_12 m_22 m_32 ... cov_11 cov_21 cov_31 cov_12 ... cov_33 covIsGlobal
+            // Note that the "m" can be replaced by another symbol (default is "m").
+
+            // Output mean_size
+            outstrm << std::left << std::setw(out_width) << "mean_size" << ":\t" << T::MeanRows() << ",\t" << T::MeanCols() << std::endl;
+
+            // Output degrees of freedom
+            outstrm << std::left << std::setw(out_width) << "dof" << ":\t" << T::Dof() << std::endl;
+
+            // Output number of measurements
+            outstrm << std::left << std::setw(out_width) << "num_meas" << ":\t" << num_meas << std::endl;
+
+            // Create a separater
+            outstrm << std::string( out_width * (T::MeanRows() * T::MeanCols() + std::pow(T::Dof(), 2) + 2), '=') << std::endl;
+            
+            // Now, the column headers
+            //  First, the time
+            outstrm << std::left << std::setw(out_width) << "Time";
+            //  Second, the mean elements
+            for(size_t i = 0; i < T::MeanRows(); ++i){
+                for( size_t j = 0; j < T::MeanCols(); ++j){
+                    std::ostringstream ss;
+                    ss << mean_symbol << "_" << i + 1 << j + 1;
+                    outstrm  << std::left << std::setw(out_width) << ss.str() << std::right;
+                }
+            }
+
+            // Third, the covariance header
+            for(size_t i = 0; i < T::Dof(); ++i){
+                for( size_t j = 0; j < T::Dof(); ++j){
+                    std::ostringstream ss;
+                    ss << "cov_" << i + 1 << j + 1;
+                    outstrm << std::left << std::setw(out_width) << ss.str();
+                }
+            }
+            // Finally, output the covariance type
+            outstrm << std::left << std::setw(out_width) << "covIsGlobal" << std::endl;
+            
+            // Create a separater
+            outstrm << std::string( out_width * (T::MeanRows() * T::MeanCols() + std::pow(T::Dof(), 2) + 2), '=') << std::endl;
+        }
+        template<typename T>
         void write(std::vector<T> meas_vec, std::vector<std::string> header_str, const std::string file_name){
             // A function that writes the data to a text file of the appropriate format.
             // 
@@ -78,27 +134,34 @@ namespace RV{
             //      Full path to the .txt file to be exported.
 
             std::ofstream outstrm(file_name);
+            // Write header
+            WriteHeader<T>( outstrm, meas_vec.size());
             // Write the header
-            for( auto h : header_str){
-                outstrm << h << '\t';
-            }
-            outstrm << std::endl;
+            // for( auto h : header_str){
+            //     outstrm << h << '\t';
+            // }
+            // outstrm << std::endl;
+            
             // Now enter data
             for(auto rv : meas_vec){
                 // Export time
-                outstrm << rv.time() << '\t';
+                outstrm << std::left << std::setw(out_width) << std::setprecision(out_precision) << rv.time(); 
                 
                 // Write mean value (estimate)
-                for(size_t i = 0; i < rv.mean().size(); i++){
-                    outstrm << rv.mean()(i) << '\t';
+                for(size_t i = 0; i < rv.MeanRows(); ++i){
+                    for(size_t j = 0; j < rv.MeanCols(); ++j){
+                        outstrm << std::setw(out_width) << std::setprecision(out_precision) << rv.mean()(i, j);
+                    }
                 }
                 // Write covariance (column major)
-                for(size_t j = 0; j < rv.mean().size(); j++){
-                    for(size_t i = 0; i < rv.mean().size(); i++){
-                        outstrm << rv.cov()(i,j) << '\t';
+                for(size_t j = 0; j < rv.Dof(); j++){
+                    for(size_t i = 0; i < rv.Dof(); i++){
+                        outstrm << std::setw(out_width) << std::setprecision(out_precision) << rv.cov()(i,j);
                     }
                 }
 
+                outstrm << std::setw(out_width) << rv.covIsGlobal();
+                
                 // Flush
                 outstrm << std::endl;
             }        
@@ -121,11 +184,11 @@ namespace RV{
         // Function that displays the random variable
         template<typename T>
         void print(T rv){
-            std::cout << std::setw(1) << rv.time() << "\t\t";
-            std::cout << std::setw(5) << rv.mean().transpose() << "\t\t";
+            std::cout << std::left << std::setw(out_width) << rv.time();
+            std::cout << std::setw(out_width) << rv.mean().transpose();
             // Vectorize covariance matrix
             Eigen::Map<Eigen::RowVectorXd> cov_vec( rv.cov().data(), rv.cov().size());
-            std::cout << std::setw(5) << cov_vec;
+            std::cout << std::setw(out_width) << cov_vec;
         }
     }
 }
