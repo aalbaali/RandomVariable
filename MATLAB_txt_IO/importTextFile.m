@@ -18,8 +18,8 @@ function [ measurements, struct] = importTextFile( file_name)
     
     % Line 3 : num_meas
     num_meas_str = fgetl(fid);
-    ch = strfind( dof_str, ':');
-    num_meas = cellfun(@str2num, strsplit( num_meas_str( ch+1 : end), ','));
+    ch = strfind( num_meas_str, ':');
+    num_meas = str2num( num_meas_str( ch+1 : end));
     
     % Skip the splitter (===========)
     fgetl( fid);
@@ -54,7 +54,7 @@ function [ measurements, struct] = importTextFile( file_name)
 
     % Specify range and delimiter
     opts.DataLines = dataLines;
-%     opts.Delimiter = "\t";
+%     opts.Delimiter = ",";
 
     % Specify column names and types
     variable_names = strings(1, num_cols);
@@ -83,13 +83,15 @@ function [ measurements, struct] = importTextFile( file_name)
     if import_covariances
         cov_matrices = nan( num_points, dof^2);
     end
-    for lv1 = 2 : num_cols - 1
-        if ( lv1 - 1) <= prod( mean_size)
-            values_mat(:, lv1 - 1) = tbl.(variable_names( lv1));    
-        elseif import_covariances
-            cov_matrices(:, lv1 - 1 - prod( mean_size)) = tbl.(variable_names( lv1));
+    for lv1 = 1 : prod( mean_size)
+        values_mat(:, lv1) = tbl.(variable_names( lv1 + 1));
+    end
+    if import_covariances
+        for lv1 = 1 : dof^2
+            cov_matrices( :, lv1) = tbl.(variable_names( 1 + prod(mean_size) + lv1));
         end
     end
+
     % Columnize the measurements (transpose, do not reshape!)
     values_mat = values_mat';
     values3d = reshape( values_mat, [ mean_size, num_meas]);
