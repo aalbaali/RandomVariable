@@ -54,8 +54,22 @@ namespace RV{
             ss >> dof;
             return dof;
         }
+         
         int getNumMeas( std::string &str){
             // Gets the number of measurements
+
+            // Gets the degrees of freedom (dof) of the random variable
+            // Stringstream
+            std::stringstream ss;
+            // Find the index of the colon
+            size_t idx_col = str.find(':');
+            // Truncate everything before the colon
+            str = str.substr(idx_col + 2);
+            ss.str( str);
+            // Sizes to be returned    
+            int num_meas;    
+            ss >> num_meas;
+            return num_meas;
         }
         int getNumberOfColumns( std::string &header){
             // Gets the number of columns from the header
@@ -118,17 +132,21 @@ namespace RV{
             std::vector< std::vector <T> > data( num_meas);
 
             // Go over data and store
-            for( int i = 0; std::getline( infile, line); i++){
+            for( int i = 0; getline( infile, line); i++){
                 // Assign line to string stream
                 std::stringstream ss( line);
                 
                 // Data at the current row
                 std::vector< T> data_row (num_cols);        
-                for( int j = 0; ss >> data_row[j]; j++){
-                    // Do nothing (it's already assigned)
+
+                for( int j = 0; ss.good(); j++){
+                    std::string substr;
+                    getline( ss, substr, ',' );
+                    std::stringstream ss2( substr);
+                    ss2 >> data_row[j];
                 }
                 // Store row vector
-                data.push_back( data_row);
+                data[i] = data_row;
             }
 
             infile.close();
