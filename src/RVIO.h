@@ -3,6 +3,7 @@
 #include <sstream> // Used for stringstream
 #include <iomanip> // For nice outputs (setw)
 #include <limits>  // Get the maximum number of digits for double precision
+#include <tuple>
 
 #include <vector>
 #include <string>
@@ -12,8 +13,34 @@ const size_t out_precision = std::numeric_limits< double >::max_digits10;
 const size_t out_width     = out_precision + 5;
 
 namespace RV{
-    namespace IO{    
+    namespace IO{            
+        std::tuple< int, int> getMeanSize( std::string& str){
+            // Gets the size of the mean element (column matrix or matrix) and returns a tuple of integers. Example of an input:
+            //"mean_size		:	2,	1"
+            
+            // Stringstream
+            std::stringstream ss;
+            // Find the index of the colon
+            size_t idx_col = str.find(':');
+            // Truncate everything before the colon
+            str = str.substr(idx_col + 1);
+
+            // Sizes to be returned    
+            int sz1, sz2;
+            char c;
+            ss.str( str);
+            ss >> sz1 >> c >> sz2;
+            return std::make_tuple( sz1, sz2);
+        }
+
+        int getDof( std::string &str){
+            // Gets the degrees of freedom (dof) of the random variable
+        }
+        int getNumMeas( std::string &str){
+            // Gets the number of measurements
+        }
         int getNumberOfColumns( std::string &header){
+            // Gets the number of columns from the header
             std::stringstream ss( header);
             int i = 0;
             // String that stores the column/variable name
