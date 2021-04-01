@@ -1,4 +1,11 @@
 // This is a header for the Input/Output of a random variable
+// 
+// TODO:
+//      1. Remove the templated argument. Everything should be read from the file immediately.
+// 
+// Amro Al-Baali
+// 31-Mar-2021
+
 #include <fstream> // Used to read file
 #include <sstream> // Used for stringstream
 #include <iomanip> // For nice outputs (setw)
@@ -35,6 +42,17 @@ namespace RV{
 
         int getDof( std::string &str){
             // Gets the degrees of freedom (dof) of the random variable
+            // Stringstream
+            std::stringstream ss;
+            // Find the index of the colon
+            size_t idx_col = str.find(':');
+            // Truncate everything before the colon
+            str = str.substr(idx_col + 2);
+            ss.str( str);
+            // Sizes to be returned    
+            int dof;    
+            ss >> dof;
+            return dof;
         }
         int getNumMeas( std::string &str){
             // Gets the number of measurements
@@ -67,16 +85,37 @@ namespace RV{
             if (!infile.is_open())
                 perror("error while opening file");
 
+            // *********************************
+            // Header
             // line that will track the file 
             std::string line;
-            // Get first line (header)
+            
+            // 1. mean_size
+            std::getline( infile, line);
+            size_t msz1, msz2;
+            std::tie( msz1, msz2) = getMeanSize( line);
+
+            // 2. dof (degrees of freedom)
+            std::getline( infile, line);
+            size_t dof = getDof( line);
+            
+            // 3. num_meas (number of measurements)
+            std::getline( infile, line);
+            size_t num_meas = getNumMeas( line);
+
+            // 4. Line breaker
             std::getline( infile, line);
 
+            // 5. Column titles
+            std::getline( infile, line);
             // Get number of columns
             const int num_cols = getNumberOfColumns( line);
             
+            // 6. Line breaker
+            std::getline( infile, line);
+
             // Create a (dynamic) vector that includes a vector of size num_cols
-            std::vector< std::vector <T> > data;
+            std::vector< std::vector <T> > data( num_meas);
 
             // Go over data and store
             for( int i = 0; std::getline( infile, line); i++){

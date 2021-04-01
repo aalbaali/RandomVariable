@@ -63,10 +63,10 @@
 
 #include "RVIO.h"
 
-std::string str = "mean_size		:	2,	1";
+
+std::string str = "dof			:	2";
+
 
 int main(){
-    int x1, x2;
-    std::tie( x1, x2) = RV::IO::getMeanSize( str);
-    std::cout << x1 << "\t" << x2 << std::endl;
+    std::cout << RV::IO::getDof( str) << std::endl;
 }
