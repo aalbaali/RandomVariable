@@ -8,8 +8,8 @@
 #include <string>
 
 // Width of each column
-const size_t out_precision = std::numeric_limits< double >::max_digits10;
-const size_t out_width     = out_precision + 5;
+const size_t out_precision = std::numeric_limits< double >::max_digits10  - 2;
+const size_t out_width     = out_precision + 10; // Requires at least a padding of 5 for scientific notation (i.e., the 'e-05' notation)
 
 namespace RV{
     namespace IO{    
@@ -122,6 +122,14 @@ namespace RV{
             // Create a separater
             outstrm << std::string( out_width * (T::MeanRows() * T::MeanCols() + std::pow(T::Dof(), 2) + 2), '=') << std::endl;
         }
+
+        // Make this static/const
+        template<typename T>
+        void exportEntity(std::ostream &outstrm, T entity){
+            std::ostringstream oss;
+                oss <<  entity << ",";
+                outstrm << std::setw(out_width) << oss.str();
+        }
         template<typename T>
         void write(std::vector<T> meas_vec, const std::string file_name, std::string mean_symbol = "m"){
             // A function that writes the data to a text file of the appropriate format.
@@ -136,31 +144,27 @@ namespace RV{
             std::ofstream outstrm(file_name);
             // Write header
             WriteHeader<T>( outstrm, meas_vec.size(), mean_symbol);
-            // Write the header
-            // for( auto h : header_str){
-            //     outstrm << h << '\t';
-            // }
-            // outstrm << std::endl;
             
             // Now enter data
+            outstrm << std::fixed << std::left;
+            // outstrm << std::fixed;
             for(auto rv : meas_vec){
                 // Export time
-                outstrm << std::left << std::setw(out_width) << std::setprecision(out_precision) << rv.time(); 
-                
+                exportEntity( outstrm, rv.time());
+
                 // Write mean value (estimate)
                 for(size_t i = 0; i < T::MeanRows(); ++i){
                     for(size_t j = 0; j < T::MeanCols(); ++j){
-                        outstrm << std::setw(out_width) << std::setprecision(out_precision) << rv.mean()(i, j);
+                        exportEntity( outstrm, rv.mean()(i, j));                        
                     }
                 }
                 // Write covariance (column major)
                 for(size_t j = 0; j < T::Dof(); j++){
                     for(size_t i = 0; i < T::Dof(); i++){
-                        outstrm << std::setw(out_width) << std::setprecision(out_precision) << rv.cov()(i,j);
+                        exportEntity( outstrm, rv.cov()(i,j));
                     }
                 }
-
-                outstrm << std::setw(out_width) << rv.covIsGlobal();
+                exportEntity( outstrm, rv.covIsGlobal());
                 
                 // Flush
                 outstrm << std::endl;
