@@ -1,8 +1,16 @@
 // This is a header for the Input/Output of a random variable
+// 
+// TODO:
+//      1. Remove the templated argument. Everything should be read from the file immediately.
+// 
+// Amro Al-Baali
+// 31-Mar-2021
+
 #include <fstream> // Used to read file
 #include <sstream> // Used for stringstream
 #include <iomanip> // For nice outputs (setw)
 #include <limits>  // Get the maximum number of digits for double precision
+#include <tuple>
 
 #include <vector>
 #include <string>
@@ -12,8 +20,59 @@ const size_t out_precision = std::numeric_limits< double >::max_digits10  - 2;
 const size_t out_width     = out_precision + 10; // Requires at least a padding of 5 for scientific notation (i.e., the 'e-05' notation)
 
 namespace RV{
-    namespace IO{    
+    namespace IO{            
+        std::tuple< int, int> getMeanSize( std::string& str){
+            // Gets the size of the mean element (column matrix or matrix) and returns a tuple of integers. Example of an input:
+            //"mean_size		:	2,	1"
+            
+            // Stringstream
+            std::stringstream ss;
+            // Find the index of the colon
+            size_t idx_col = str.find(':');
+            // Truncate everything before the colon
+            str = str.substr(idx_col + 1);
+
+            // Sizes to be returned    
+            int sz1, sz2;
+            char c;
+            ss.str( str);
+            ss >> sz1 >> c >> sz2;
+            return std::make_tuple( sz1, sz2);
+        }
+
+        int getDof( std::string &str){
+            // Gets the degrees of freedom (dof) of the random variable
+            // Stringstream
+            std::stringstream ss;
+            // Find the index of the colon
+            size_t idx_col = str.find(':');
+            // Truncate everything before the colon
+            str = str.substr(idx_col + 2);
+            ss.str( str);
+            // Sizes to be returned    
+            int dof;    
+            ss >> dof;
+            return dof;
+        }
+         
+        int getNumMeas( std::string &str){
+            // Gets the number of measurements
+
+            // Gets the degrees of freedom (dof) of the random variable
+            // Stringstream
+            std::stringstream ss;
+            // Find the index of the colon
+            size_t idx_col = str.find(':');
+            // Truncate everything before the colon
+            str = str.substr(idx_col + 2);
+            ss.str( str);
+            // Sizes to be returned    
+            int num_meas;    
+            ss >> num_meas;
+            return num_meas;
+        }
         int getNumberOfColumns( std::string &header){
+            // Gets the number of columns from the header
             std::stringstream ss( header);
             int i = 0;
             // String that stores the column/variable name
@@ -40,29 +99,54 @@ namespace RV{
             if (!infile.is_open())
                 perror("error while opening file");
 
+            // *********************************
+            // Header
             // line that will track the file 
             std::string line;
-            // Get first line (header)
+            
+            // 1. mean_size
+            std::getline( infile, line);
+            size_t msz1, msz2;
+            std::tie( msz1, msz2) = getMeanSize( line);
+
+            // 2. dof (degrees of freedom)
+            std::getline( infile, line);
+            size_t dof = getDof( line);
+            
+            // 3. num_meas (number of measurements)
+            std::getline( infile, line);
+            size_t num_meas = getNumMeas( line);
+
+            // 4. Line breaker
             std::getline( infile, line);
 
+            // 5. Column titles
+            std::getline( infile, line);
             // Get number of columns
             const int num_cols = getNumberOfColumns( line);
             
+            // 6. Line breaker
+            std::getline( infile, line);
+
             // Create a (dynamic) vector that includes a vector of size num_cols
-            std::vector< std::vector <T> > data;
+            std::vector< std::vector <T> > data( num_meas);
 
             // Go over data and store
-            for( int i = 0; std::getline( infile, line); i++){
+            for( int i = 0; getline( infile, line); i++){
                 // Assign line to string stream
                 std::stringstream ss( line);
                 
                 // Data at the current row
                 std::vector< T> data_row (num_cols);        
-                for( int j = 0; ss >> data_row[j]; j++){
-                    // Do nothing (it's already assigned)
+
+                for( int j = 0; ss.good(); j++){
+                    std::string substr;
+                    getline( ss, substr, ',' );
+                    std::stringstream ss2( substr);
+                    ss2 >> data_row[j];
                 }
                 // Store row vector
-                data.push_back( data_row);
+                data[i] = data_row;
             }
 
             infile.close();
