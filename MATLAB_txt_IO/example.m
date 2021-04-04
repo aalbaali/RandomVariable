@@ -4,20 +4,20 @@
 %   Amro Al Baali
 %   15-Mar-2021
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all;
+% clear all;
 close all;
 
 %% Load data
 % Ground truth file name
-file_name_gt = "/home/aalbaali/Documents/Data/Data_generator/linear_system/msd_ground_truth.txt";
+file_name_gt = "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\linear_system\msd_ground_truth.txt";
 % State estimates file name
-file_name_est = "/home/aalbaali/Documents/Data/Data_generator/linear_system/msd_kf_estimates.txt";
+file_name_est= "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\linear_system\msd_kf_estimates.txt";
 
 % Load data
 %   Specify the number of columns since the ground truth doesn't include
 %   covariances
-struct_gt  = importTextFile( file_name_gt,  2);
-struct_est = importTextFile( file_name_est, 2);
+struct_gt  = importTextFile( file_name_gt);
+struct_est = importTextFile( file_name_est);
 
 %% Plot
 % Plotting range

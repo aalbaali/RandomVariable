@@ -11,7 +11,7 @@ close all;
 rng( 'default');
 addpath('..');
 % Data directories (exporting locations)
-data_dir = "/home/aalbaali/Documents/Data/Data_generator/linear_system";
+data_dir = "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\linear_system";
 %% Simulation parameters
 % Simulation frequency
 f_sim = 100;
@@ -94,12 +94,12 @@ xlabel( '$t_{k}$ [s]', 'Interpreter', 'latex', 'FontSize', 14);
 
 %% Generate text file
 % Interoceptive measurements
-generateTextFile( t, [ u_noisy; repelem( var_u, 1, length( t))], ...
-    { 'u_1', 'var_u1'}, fullfile(data_dir, 'msd_acc.txt'));
+generateTextFile( fullfile(data_dir, 'msd_acc.txt'), t, u_noisy,...
+    reshape( repelem( var_u, 1, length( t)), 1, 1, []), 'u');
 
-generateTextFile( t_y, [ y_noisy; repelem( var_y, 1, length( t_y))], ...
-    { 'y_1', 'var_y1'}, fullfile(data_dir, 'msd_pos.txt'));
+generateTextFile( fullfile(data_dir, 'msd_pos.txt'), t_y, y_noisy, ...
+    reshape( repelem( var_y, 1, length( t_y)), 1, 1, []), 'y');
 
 % Ground truth
-generateTextFile( t, x_true, ...
-    { 'x_1', 'x_2'}, fullfile( data_dir, 'msd_ground_truth.txt'));
+generateTextFile( fullfile( data_dir, 'msd_ground_truth.txt'), t, x_true, ...
+    [], 'x');

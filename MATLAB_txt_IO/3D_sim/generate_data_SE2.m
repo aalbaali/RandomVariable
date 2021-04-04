@@ -17,7 +17,7 @@ gt_states = gt_struct.gt_states;
 % Add paths
 addpath( '..');
 % Export location
-dir_out = 'data';
+dir_out = '\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\SE2';
 %% Simulation parameters
 % Dimension of the problem (2)
 dim_x = 2;
@@ -97,31 +97,28 @@ disp('Genearting velocity sensor file');
 tic();
 % Velocity sensor
 %   Convert covariances to row matrix 
-cov_vel_row = repmat( cov_vel( :), 1, length( idx_vel));
+cov_vel_3d = repmat( cov_vel, 1, 1, length( idx_vel));
 %   Generate text file
-generateTextFile( t_vel, [ meas_vel; cov_vel_row ], ...
-    { 'v_btt_b_1', 'v_btt_b_2', 'cov_11', 'cov_21', 'cov_12', 'cov_22'}, ...
-    fullfile(dir_out, 'meas_vel.txt'));
+generateTextFile( fullfile(dir_out, 'meas_vel.txt'), t_vel, meas_vel, ...
+    cov_vel_3d, 'v_btt_b');    
 toc();
 
 % Gyro sensor
 disp('Genearting gyro sensor file');
 tic();
 %   Convert covariances to row matrix 
-cov_gyro_row = repmat( cov_gyro( :), 1, length( idx_gyro));
+cov_gyro_3d = repmat( cov_gyro, 1, 1, length( idx_gyro));
 %   Generate text file
-generateTextFile( t_gyro, [ meas_gyro; cov_gyro_row ], ...
-    { 'omega_bi_b_1', 'var_1'}, ...
-    fullfile(dir_out, 'meas_gyro.txt'));
+generateTextFile( fullfile(dir_out, 'meas_gyro.txt'), t_gyro, meas_gyro, ...
+    cov_gyro_3d, 'omega_bi_b');    
 toc();
 
 % Position sensor
 disp('Genearting GPS sensor file');
 tic();
 %   Convert covariances to row matrix 
-cov_gps_row = repmat( cov_gps( :), 1, length( idx_gps));
+cov_gps_3d = repmat( cov_gps, 1, 1, length( idx_gps));
 %   Generate text file
-generateTextFile( t_gps, [ meas_gps; cov_gps_row], ...
-    { 'r_bt_t_1', 'r_bt_t_2', 'cov_11', 'cov_21', 'cov_12', 'cov_22'}, ...
-    fullfile(dir_out, 'meas_gps.txt'));
+generateTextFile( fullfile(dir_out, 'meas_gps.txt'), t_gps, meas_gps, ...
+    cov_gps_3d, 'r_bt_t');
 toc();
