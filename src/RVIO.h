@@ -2,9 +2,13 @@
 // 
 // TODO:
 //      1. Remove the templated argument. Everything should be read from the file immediately.
+//      2. Separate function implementations into a separate C++ file. Use it as a (static) library if possible or as a precompiled header
 // 
 // Amro Al-Baali
 // 31-Mar-2021
+
+#ifndef RVIO_H
+#define RVIO_H
 
 #include <fstream> // Used to read file
 #include <sstream> // Used for stringstream
@@ -276,3 +280,5 @@ namespace RV{
         }
     }
 }
+
+#endif

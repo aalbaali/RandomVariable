@@ -1,5 +1,9 @@
+#ifndef RV_H
+#define RV_H
+
 #include <vector>
 #include <string>
+#include "Eigen/Dense"
 
 // Class of measurements. Contains i) measurement, ii) covariance, and iii) time of the measurement.
 // Change the name of the class to RandomVariable (it just includes the mean, covariance, and time step)
@@ -83,3 +87,5 @@ class RandomVariable{
         bool _cov_is_global = true;
     public:
 };
+
+#endif
