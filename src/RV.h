@@ -33,7 +33,7 @@ class RandomVariable{
             Eigen::Matrix< double, _dof, _dof> cov;
             for( size_t i = 0; i < _MeanRows; i++){
                 for( size_t j = 0; j < _MeanCols; j++){
-                    mean( i, j) = row_of_raw_data[ i * _MeanRows + j + 1];
+                    mean( i, j) = row_of_raw_data[ i + j * _MeanCols + 1];
                 }
                 for( size_t j = 0; j < _dof; j++){
                     // 1 : for time

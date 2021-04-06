@@ -191,7 +191,7 @@ namespace RV{
             for(size_t i = 0; i < T::MeanRows(); ++i){
                 for( size_t j = 0; j < T::MeanCols(); ++j){
                     std::ostringstream ss;
-                    ss << mean_symbol << "_" << i + 1 << j + 1;
+                    ss << mean_symbol << "_" << j + 1 << i + 1;
                     outstrm  << std::left << std::setw(out_width) << ss.str() << std::right;
                 }
             }
@@ -243,7 +243,7 @@ namespace RV{
                 // Write mean value (estimate)
                 for(size_t i = 0; i < T::MeanRows(); ++i){
                     for(size_t j = 0; j < T::MeanCols(); ++j){
-                        exportEntity( outstrm, rv.mean()(i, j));                        
+                        exportEntity( outstrm, rv.mean()(j, i));                        
                     }
                 }
                 // Write covariance (column major)
