@@ -9,9 +9,9 @@ close all;
 
 %% Load data
 % Ground truth file name
-file_name_gt = "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\linear_system\msd_ground_truth.txt";
+file_name_gt = "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\SE2\gt_states.txt";
 % State estimates file name
-file_name_est= "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\linear_system\msd_kf_estimates.txt";
+file_name_est= "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\SE2\est_xhat.txt";
 
 % Load data
 %   Specify the number of columns since the ground truth doesn't include
@@ -19,18 +19,35 @@ file_name_est= "\\wsl$\Ubuntu-20.04\home\aa\Documents\Data\Data_generator\linear
 struct_gt  = importTextFile( file_name_gt);
 struct_est = importTextFile( file_name_est);
 
-%% Plot
 % Plotting range
 idx_range = 1 : min( length(struct_gt.time), length( struct_est.time));
-x_hat = struct_est.values( :, idx_range);
-x_gt  = struct_gt.values ( :, idx_range);
-time  = struct_est.time( idx_range);
 
+% Re-normalize poses lambda function
+renormalize = @(X_k) se2alg.expMap( se2alg.vee( SE2.logMap( X_k)));
+X_hat = struct_est.values3d;
+X_gt  = struct_gt.values3d;
+for kk = 1 : length( idx_range)
+    C_k = X_hat( 1 : 2, 1 : 2, kk);
+    C_k = SO2.synthesize( atan2( C_k(2, 1), C_k(1, 1)));
+    X_hat( 1 : 2, 1 : 2, kk) = C_k;
+    
+    C_k = X_gt( 1 : 2, 1 : 2, kk);
+    C_k = SO2.synthesize( atan2( C_k(2, 1), C_k(1, 1)));
+    X_gt( 1 : 2, 1 : 2, kk) = C_k;
+end
+%% Plot
+% Lambda function to compute error
+SE2Ominus = @(X_k1, X_k2) se2alg.vee(SE2.logMap( X_k1 \ X_k2));
+% Compute errors
+dxi = cell2mat( arrayfun(@(kk) SE2Ominus( X_gt(:,:,kk), ...
+    X_hat(:,:,kk)), idx_range, 'UniformOutput', false));
+% Get covariance matrices
+time = struct_gt.time;
 figure; 
-for kk = 1 : 2
-    subplot(2, 1, kk);
+for kk = 1 : 3
+    subplot(3, 1, kk);
     hold all; grid on;
-    plot( time', x_hat(kk,:) - x_gt(kk,:), 'LineWidth', 1.5);
+    plot( time', dxi(kk,:), 'LineWidth', 1.5);
     plot(  time, 3 * sqrt( squeeze( struct_est.cov( kk, kk, idx_range))), '-.r',...
         'LineWidth', 1.5);
     plot(  time, -3 * sqrt( squeeze( struct_est.cov( kk, kk, idx_range))), '-.r',...

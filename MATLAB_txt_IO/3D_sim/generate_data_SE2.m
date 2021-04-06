@@ -30,6 +30,10 @@ f_gt = 1 / (t_gt(2) - t_gt(1));
 % (Downsampled) simulation frequency
 f_sim = f_gt; % [Hz] (could also be lower than this value)
 
+% Prior
+%   Covariance
+cov_prior = 1e-5 * eye( 3);
+
 % Interoceptive
 %   Velocity sensor
 %       Frequency
@@ -74,6 +78,13 @@ idx_gps = idx_gps_0 : ( f_gt / f_gps) : length( t_gt);
 t_gps  = t_gt( idx_gps);
 
 %% Get (corrupted) measurements
+% Prior
+%   True measurement (renormalized)
+meas_prior = SE2.synthesize( gt_states.C_bt(1 : 2, 1 : 2,1), gt_states.r_bt_t(1:2,1));
+meas_prior = se2alg.expMap( se2alg.vee( SE2.logMap( meas_prior)));
+%   Corrupted
+meas_prior = meas_prior * se2alg.expMap( chol( cov_prior)' * randn( 3, 1));
+
 % Velocity
 %   True measurement
 meas_vel = gt_states.v_btt_b( 1 : dim_x, idx_vel);
@@ -93,6 +104,11 @@ meas_gps = gt_states.r_bt_t( 1 : dim_x, idx_gps);
 meas_gps = meas_gps + chol( cov_gps)' * randn( size( meas_gps));
 
 %% Generate files
+disp('Genearting prior sensor file');
+tic();
+generateTextFile( fullfile(dir_out, 'meas_prior.txt'), t_vel(1), meas_prior, ...
+    cov_prior, 'X', 3);
+toc();
 disp('Genearting velocity sensor file');
 tic();
 % Velocity sensor
@@ -121,4 +137,18 @@ cov_gps_3d = repmat( cov_gps, 1, 1, length( idx_gps));
 %   Generate text file
 generateTextFile( fullfile(dir_out, 'meas_gps.txt'), t_gps, meas_gps, ...
     cov_gps_3d, 'r_bt_t');
+toc();
+
+
+disp('Generating ground truth file');
+tic();
+% Construct poses
+X_poses = zeros( 3, 3, length( t_gt));
+for kk = 1 : length( t_gt)
+    X_k = SE2.synthesize( gt_states.C_bt(1:2,1:2,kk)', gt_states.r_bt_t(1:2,kk));
+    X_k = se2alg.expMap( se2alg.vee( SE2.logMap( X_k)));    
+    X_poses(:,:, kk) = X_k;
+end
+generateTextFile( fullfile(dir_out, 'gt_states.txt'), t_gt, X_poses, ...
+    [], 'X', 3);
 toc();
