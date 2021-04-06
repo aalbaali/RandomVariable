@@ -27,11 +27,14 @@ class RandomVariable{
 
         template<typename VectorT>
         RandomVariable( std::vector<VectorT> row_of_raw_data){
+            // Creates an object from a vector of vectors (usually obtained from `read` IO function (raw data))
             double time = row_of_raw_data[ 0];
             Eigen::Matrix< double, _MeanRows, _MeanCols> mean;
             Eigen::Matrix< double, _dof, _dof> cov;
             for( size_t i = 0; i < _MeanRows; i++){
-                mean( i) = row_of_raw_data[ i + 1];
+                for( size_t j = 0; j < _MeanCols; j++){
+                    mean( i, j) = row_of_raw_data[ i + j * _MeanCols + 1];
+                }
                 for( size_t j = 0; j < _dof; j++){
                     // 1 : for time
                     // _MeanRows * _MeanCols : size of the mean
