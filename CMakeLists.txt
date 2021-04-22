@@ -2,13 +2,14 @@ cmake_minimum_required(VERSION 3.10)
 project( 
     RandomVariable
     VERSION 0.0.1
-    LANGUAGES CXX)
+    LANGUAGES CXX
+    )
 
 # include(CTest)
 # enable_testing()
 
 # Option to build examples
-option(BUILD_EXAMPLES "Build all examples." ON)
+option(BUILD_EXAMPLES "Build all examples." OFF)
 
 # Include headers as interface library
 add_library(${PROJECT_NAME} INTERFACE)
