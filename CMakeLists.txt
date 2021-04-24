@@ -11,18 +11,14 @@ project(
 # Option to build examples
 option(BUILD_EXAMPLES "Build all examples." OFF)
 
-# Include headers as interface library
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories( 
-    ${PROJECT_NAME} 
-    INTERFACE
-    "include/RandomVariable"
-    )
+# Find package
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+find_package(RandomVariable)
 
 # Add the header files
 # target_include_directories( RandomVariable PUBLIC include)
 if(BUILD_EXAMPLES)
-    message(STATUS "Building examples")
+    message(STATUS "Building example")
     add_subdirectory( examples)
 endif()
 
@@ -30,16 +26,8 @@ endif()
 ########################################
 # Installing headers
 ########################################
-# For using with installation
-target_include_directories( 
-    ${PROJECT_NAME} 
-    INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
-)
-
-# Install header files
 install(
-  DIRECTORY "${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}"
-  DESTINATION include
+  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
+  DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/include"
+#   DESTINATION /usr/local/include
 )
