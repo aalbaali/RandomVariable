@@ -243,7 +243,7 @@ namespace RV{
                 // Write mean value (estimate)
                 for(size_t i = 0; i < T::MeanRows(); ++i){
                     for(size_t j = 0; j < T::MeanCols(); ++j){
-                        exportEntity( outstrm, rv.mean()(j, i));                        
+                        exportEntity( outstrm, rv.mean()(i, j));                        
                     }
                 }
                 // Write covariance (column major)
