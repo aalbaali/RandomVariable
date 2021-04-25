@@ -79,7 +79,7 @@ class RandomVariable{
         static constexpr size_t Dof()      noexcept{ 
                 return _dof;
         }
-    private:                
+    protected:                
         Eigen::Matrix< double, _MeanRows, _MeanCols> _mean;
         Eigen::Matrix< double, _dof, _dof> _cov;
 
@@ -88,7 +88,6 @@ class RandomVariable{
 
         // Global/local covariance (relavent to manifold RVs)
         bool _cov_is_global = true;
-    public:
 };
 
 #endif
