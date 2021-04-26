@@ -25,7 +25,7 @@ const size_t out_width     = out_precision + 10; // Requires at least a padding 
 
 namespace RV{
     namespace IO{            
-        std::tuple< int, int> getMeanSize( std::string& str){
+        static std::tuple< int, int> getMeanSize( std::string& str){
             // Gets the size of the mean element (column matrix or matrix) and returns a tuple of integers. Example of an input:
             //"mean_size		:	2,	1"
             
@@ -44,7 +44,7 @@ namespace RV{
             return std::make_tuple( sz1, sz2);
         }
 
-        int getDof( std::string &str){
+        static int getDof( std::string &str){
             // Gets the degrees of freedom (dof) of the random variable
             // Stringstream
             std::stringstream ss;
@@ -59,7 +59,7 @@ namespace RV{
             return dof;
         }
          
-        int getNumMeas( std::string &str){
+        static int getNumMeas( std::string &str){
             // Gets the number of measurements
 
             // Gets the degrees of freedom (dof) of the random variable
@@ -75,7 +75,7 @@ namespace RV{
             ss >> num_meas;
             return num_meas;
         }
-        int getNumberOfColumns( std::string &header){
+        static int getNumberOfColumns( std::string &header){
             // Gets the number of columns from the header
             std::stringstream ss( header);
             int i = 0;
@@ -89,7 +89,7 @@ namespace RV{
         }
 
         template< typename T = double>
-        std::vector< std::vector< T>> read( const std::string &file_name){
+        static std::vector< std::vector< T>> read( const std::string &file_name){
             // This function reads the data from the text file. The first line is a header file and will be used to count the number of columns. E.g., for a random variable of dimension 2, the header may look like
             //  Tim     x_1     x_2     cov_11  cov_21  cov_12  cov_22.
             // 
@@ -159,7 +159,7 @@ namespace RV{
         }
 
         template<typename T>
-        void WriteHeader(std::ostream& outstrm, size_t num_meas, std::string mean_symbol){
+        static void WriteHeader(std::ostream& outstrm, size_t num_meas, std::string mean_symbol){
             // This is a templated function that returns the header string. The string contains:
             //  mean_size : T::MeanRows(), T::MeanRows() 
             //      Size of the mean element
@@ -213,13 +213,13 @@ namespace RV{
 
         // Make this static/const
         template<typename T>
-        void exportEntity(std::ostream &outstrm, T entity){
+        static void exportEntity(std::ostream &outstrm, T entity){
             std::ostringstream oss;
                 oss <<  entity << ",";
                 outstrm << std::setw(out_width) << oss.str();
         }
         template<typename T>
-        void write(std::vector<T> meas_vec, const std::string file_name, std::string mean_symbol = "m"){
+        static void write(std::vector<T> meas_vec, const std::string file_name, std::string mean_symbol = "m"){
             // A function that writes the data to a text file of the appropriate format.
             // 
             // @params[in] meas_vec
@@ -260,7 +260,7 @@ namespace RV{
         }
 
         template<typename T>
-        std::vector< T> import(const std::string &file_name){
+        static std::vector< T> import(const std::string &file_name){
             // Import raw vector data
             auto raw_data = read( file_name);
             // Vector of measurement objects
@@ -275,7 +275,7 @@ namespace RV{
 
         // Function that displays the random variable
         template<typename T>
-        void print(T rv){
+        static void print(T rv){
             std::cout << std::left << std::setw(out_width) << rv.time();
             std::cout << std::setw(out_width) << rv.mean().transpose();
             // Vectorize covariance matrix
