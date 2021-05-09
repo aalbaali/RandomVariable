@@ -241,8 +241,8 @@ namespace RV{
                 exportEntity( outstrm, rv.time());
 
                 // Write mean value (estimate)
-                for(size_t i = 0; i < T::MeanRows(); ++i){
-                    for(size_t j = 0; j < T::MeanCols(); ++j){
+                for(size_t j = 0; j < T::MeanCols(); ++j){
+                    for(size_t i = 0; i < T::MeanRows(); ++i){
                         exportEntity( outstrm, rv.mean()(i, j));                        
                     }
                 }

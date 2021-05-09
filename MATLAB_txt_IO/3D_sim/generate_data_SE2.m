@@ -32,14 +32,14 @@ f_sim = f_gt; % [Hz] (could also be lower than this value)
 
 % Prior
 %   Covariance
-cov_prior = 1e-5 * eye( 3);
+cov_prior = 1e-2 * eye( 3);
 
 % Interoceptive
 %   Velocity sensor
 %       Frequency
 f_vel    = f_sim;
 %       Noise covariance
-cov_vel  = 0.01^2 * eye( dim_x);
+cov_vel  = 0.1^2 * eye( dim_x);
 %       Index of first measurement
 idx_vel_0  = 1;
 
@@ -47,16 +47,16 @@ idx_vel_0  = 1;
 %       Frequency
 f_gyro   = f_sim;
 %       Noise covariance
-cov_gyro = (0.005)^2 * eye( dof_x - dim_x); % [rad/s];
+cov_gyro = (0.05)^2 * eye( dof_x - dim_x); % [rad/s];
 %       Index of first measurement
 idx_gyro_0 = 1;
 
 % Exteroceptive
 %   GPS 
 %       Frequency
-f_gps    = 5;
+f_gps    = 20;
 %       Noise covariance
-cov_gps  = 0.01^2 * eye( dim_x);
+cov_gps  = 0.05^2 * eye( dim_x);
 %       Index of first measurement
 idx_gps_0 = f_sim / f_gps;
 
@@ -152,3 +152,38 @@ end
 generateTextFile( fullfile(dir_out, 'gt_states.txt'), t_gt, X_poses, ...
     [], 'X', 3);
 toc();
+
+
+%% Create .mat file
+% Simulation information
+data_struct.sim.time = t_gt;
+data_struct.sim.freq = f_sim;
+
+% Measurements
+%   Prior
+data_struct.meas.prior.mean = meas_prior;
+data_struct.meas.prior.cov  = cov_prior;
+data_struct.meas.prior.time = t_gt(1);
+%   Linear velocity
+data_struct.meas.velocity.mean = meas_vel;
+data_struct.meas.velocity.cov  = cov_vel_3d;
+data_struct.meas.velocity.time = t_vel;
+data_struct.meas.velocity.freq = f_vel;
+%   Angular velocity
+data_struct.meas.gyro.mean = meas_gyro;
+data_struct.meas.gyro.cov  = cov_gyro_3d;
+data_struct.meas.gyro.time = t_gyro;
+data_struct.meas.gyro.freq = f_gyro;
+%   GPS
+data_struct.meas.gps.mean = meas_gps;
+data_struct.meas.gps.cov  = cov_gps_3d;
+data_struct.meas.gps.time = t_gps;
+data_struct.meas.gps.freq = f_gps;
+
+% Save struct
+save( fullfile( dir_out, 'noisy_data'), 'data_struct');
+
+% Save ground truth
+save( fullfile( dir_out, 'gt_SE2'), 'X_poses');
+
+fprintf( "Saved files to '%s'\n", dir_out);

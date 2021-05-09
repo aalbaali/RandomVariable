@@ -5,7 +5,7 @@ project(
     LANGUAGES CXX
     )
 
-  # make cache variables for install destinations
+# make cache variables for install destinations
 include(GNUInstallDirs)
 
 # include CMakePackageConfigHelpers macro
@@ -51,8 +51,16 @@ install(FILES
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RandomVariable
 )
 
-# generate the export targets for the build tree
-export(EXPORT RandomVariableTargets
-       FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/RandomVariableTargets.cmake"
-       NAMESPACE RandomVariable::
+# # generate the export targets for the build tree
+# export(EXPORT RandomVariableTargets
+#        FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/RandomVariableTargets.cmake"
+#        NAMESPACE "RandomVariable::"
+#       #  Add destination
+# )
+
+# generate and install export file
+install(EXPORT RandomVariableTargets
+        FILE RandomVariableTargets.cmake
+        NAMESPACE RandomVariable::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RandomVariable
 )

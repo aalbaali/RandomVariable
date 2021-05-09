@@ -1,8 +1,8 @@
-add_library(RandomVariable INTERFACE RV.h RVIO.h)
+add_library(RandomVariable INTERFACE)
 # Create alias
 add_library(RandomVariable::RandomVariable ALIAS RandomVariable)
 
-find_package(Eigen3)
+find_package(Eigen3 REQUIRED)
 target_link_libraries(RandomVariable PUBLIC INTERFACE Eigen3::Eigen)
 
 # Add inlude directories
@@ -33,9 +33,9 @@ install(FILES RV.h RVIO.h
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/RandomVariable"
 )
 
-# generate and install export file
-install(EXPORT RandomVariableTargets
-        FILE RandomVariableTargets.cmake
-        NAMESPACE RandomVariable::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RandomVariable
-)
+# # generate and install export file
+# install(EXPORT RandomVariableTargets
+#         FILE RandomVariableTargets.cmake
+#         NAMESPACE RandomVariable::
+#         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/RandomVariable
+# )
