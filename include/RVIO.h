@@ -10,6 +10,7 @@
 #ifndef RVIO_H
 #define RVIO_H
 
+#include <iostream>
 #include <fstream> // Used to read file
 #include <sstream> // Used for stringstream
 #include <iomanip> // For nice outputs (setw)
