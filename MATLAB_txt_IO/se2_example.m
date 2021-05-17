@@ -5,7 +5,7 @@
 %   15-Mar-2021
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % clear all;
-close all;
+% close all;
 
 %% Load data
 % Ground truth file name
@@ -24,6 +24,9 @@ struct_batch = importTextFile( file_name_batch);
 
 % Plotting range
 idx_range = 1 : min( length(struct_gt.time), length( struct_batch.time));
+
+plt_kf    = true;
+plt_batch = true;
 
 %% Normalize SE(2) objects
 % Re-normalize poses lambda function
@@ -63,7 +66,7 @@ for kk = 1 : length( idx_range)
     X_batch_states( kk).time  = struct_batch.time( kk);
 end
 
-%% Plot
+%% Errors
 % Lambda function to compute error
 SE2Ominus = @(X_k1, X_k2) se2alg.vee(SE2.logMap( X_k1 \ X_k2));
 % Compute errors
@@ -75,43 +78,53 @@ dxi_batch = cell2mat( arrayfun(@(kk) SE2Ominus( X_gt(:,:,kk), ...
     X_batch(:,:,kk)), idx_range, 'UniformOutput', false));
 % Get covariance matrices
 time = struct_gt.time;
+
+%% Plots
 figure; 
 
 % Covariances
 %   Filter
 P_kf    = struct_kf.cov;
-%   Batch
+%   Batch 
 P_batch = struct_batch.cov;
 
-% Convert from local to global covariances
-P_kf    = reshape( cell2mat( arrayfun(@(kk) SE2.adjoint( X_kf(:, :, kk)) * P_kf( :, :, kk)...
-    * SE2.adjoint( X_kf( :, :, kk))', idx_range, 'UniformOutput', false)), 3, 3, []);
-P_batch = reshape( cell2mat( arrayfun(@(kk) SE2.adjoint( X_batch(:, :, kk)) * P_batch( :, :, kk)...
-    * SE2.adjoint( X_batch( :, :, kk))', idx_range, 'UniformOutput', false)), 3, 3, []);
+% % Convert from local to global covariances
+% dxi_kf = cell2mat( arrayfun(@(kk) SE2.adjoint( X_kf(:, :, kk)) * ...
+%     dxi_kf( :, kk), idx_range, 'UniformOutput', false));
+% P_kf    = reshape( cell2mat( arrayfun(@(kk) SE2.adjoint( X_kf(:, :, kk)) * P_kf( :, :, kk)...
+%     * SE2.adjoint( X_kf( :, :, kk))', idx_range, 'UniformOutput', false)), 3, 3, []);
+% dxi_batch = cell2mat( arrayfun(@(kk) SE2.adjoint( X_batch(:, :, kk)) * ...
+%     dxi_batch( :, kk), idx_range, 'UniformOutput', false));
+% P_batch = reshape( cell2mat( arrayfun(@(kk) SE2.adjoint( X_batch(:, :, kk)) * P_batch( :, :, kk)...
+%     * SE2.adjoint( X_batch( :, :, kk))', idx_range, 'UniformOutput', false)), 3, 3, []);
 
 % Colors
 %   Filter
-col_kf    = matlabColors( 'blue');
-col_batch = matlabColors( 'orange');
-%   Batch
+col_kf    = matlabColors( 'orange');
+col_batch = matlabColors( 'blue');
+%   Error plots
 for kk = 1 : 3
     subplot(3, 1, kk);
     hold all; grid on;
-    %   Filter
-    plot( time', dxi_kf(kk,:), 'LineWidth', 1.5, 'DisplayName', 'L-InEKF', ...
-        'Color', col_kf);
-    plot(  time, 3 * sqrt( squeeze( P_batch( kk, kk, idx_range))), '-.',...
-        'LineWidth', 1.5, 'Color', col_batch, 'HandleVisibility', 'off');
-    plot(  time, - 3 * sqrt( squeeze( P_batch( kk, kk, idx_range))), '-.',...
-        'LineWidth', 1.5, 'Color', col_kf, 'HandleVisibility', 'off');
+    if plt_kf
+        %   Filter
+        plot( time', dxi_kf(kk,:), 'LineWidth', 1.5, 'DisplayName', 'L-InEKF', ...
+            'Color', col_kf);
+        plot(  time, - 3 * sqrt( squeeze( P_kf( kk, kk, idx_range))), '-',...
+            'LineWidth', 1.5, 'Color', col_kf, 'HandleVisibility', 'off');
+        plot(  time, 3 * sqrt( squeeze( P_kf( kk, kk, idx_range))), '-',...
+            'LineWidth', 1.5, 'Color', col_kf, 'HandleVisibility', 'off');
+    end
     
-    %   Batch
-    plot( time', dxi_batch(kk,:), 'LineWidth', 1.25, 'DisplayName', 'Batch', ...
-        'Color', col_batch);
-    plot(  time, 3 * sqrt( squeeze( P_batch( kk, kk, idx_range))), '-.',...
-        'LineWidth', 1.25, 'Color', col_batch, 'HandleVisibility', 'off');
-    plot(  time, - 3 * sqrt( squeeze( P_batch( kk, kk, idx_range))), '-.',...
-        'LineWidth', 1.25, 'Color', col_batch, 'HandleVisibility', 'off');
+    if plt_batch
+        %   Batch
+        plot( time', dxi_batch(kk,:), 'LineWidth', 1.5, 'DisplayName', 'Batch', ...
+            'Color', col_batch);
+        plot(  time, 3 * sqrt( squeeze( P_batch( kk, kk, idx_range))), '-.',...
+            'LineWidth', 1.5, 'Color', col_batch, 'HandleVisibility', 'off');
+        plot(  time, - 3 * sqrt( squeeze( P_batch( kk, kk, idx_range))), '-.',...
+            'LineWidth', 1.5, 'Color', col_batch, 'HandleVisibility', 'off');
+    end
     
     % y-labels
     if kk == 1
@@ -129,6 +142,10 @@ xlabel( '$t_{k}$ [s]', 'Interpreter', 'latex', 'FontSize', 14);
 figure; 
 plotMlgPose( X_gt_states, '-', matlabColors('grey'));
 hold on;
-plotMlgPose( X_kf_states, '-.', col_kf);
-plotMlgPose( X_batch_states, '-.', col_batch);
+if plt_kf
+    plotMlgPose( X_kf_states, '-.', col_kf);
+end
+if plt_batch
+    plotMlgPose( X_batch_states, '-.', col_batch);
+end
 legend({'Ground truth', 'L-InEKF', 'Batch'}, 'Interpreter', 'latex', 'FontSize', 14);

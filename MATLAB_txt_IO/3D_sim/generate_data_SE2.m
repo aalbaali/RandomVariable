@@ -13,6 +13,7 @@ gt_filename = 'G:\My Drive\Professional\Code_base\Local\MATLAB\Research_codebase
 gt_struct = load( gt_filename, 'gt_states');
 gt_states = gt_struct.gt_states;
 
+rng('default');
 %% Paths
 % Add paths
 addpath( '..');
@@ -32,7 +33,7 @@ f_sim = f_gt; % [Hz] (could also be lower than this value)
 
 % Prior
 %   Covariance
-cov_prior = 1e-2 * eye( 3);
+cov_prior = (1e-3)^2 * eye( 3);
 
 % Interoceptive
 %   Velocity sensor
@@ -47,18 +48,18 @@ idx_vel_0  = 1;
 %       Frequency
 f_gyro   = f_sim;
 %       Noise covariance
-cov_gyro = (0.05)^2 * eye( dof_x - dim_x); % [rad/s];
+cov_gyro = (0.005)^2 * eye( dof_x - dim_x); % [rad/s];
 %       Index of first measurement
 idx_gyro_0 = 1;
 
 % Exteroceptive
 %   GPS 
 %       Frequency
-f_gps    = 20;
+f_gps    = 1;
 %       Noise covariance
-cov_gps  = 0.05^2 * eye( dim_x);
+cov_gps  = 0.01^2 * eye( dim_x);
 %       Index of first measurement
-idx_gps_0 = f_sim / f_gps;
+idx_gps_0 = f_sim / f_gps + 1;
 
 %% Get data
 % Velocity

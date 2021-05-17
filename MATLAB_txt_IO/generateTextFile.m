@@ -35,7 +35,7 @@ function generateTextFile( file_name, time_array, value_array, cov_3d, colname, 
     end
     % Lambda function that takes a string and converts to sprintf with a
     % tab after it
-    sprintftab = @( str) sprintf( '%-16s', str);
+    sprintftab = @( str) sprintf( '%-25s', str);
     
     % Lambda function that inserts a line break
     linebrk = @() fprintf( fh, '\n');
@@ -45,7 +45,7 @@ function generateTextFile( file_name, time_array, value_array, cov_3d, colname, 
 %     vec2str = @( vec) cell2mat( arrayfun( @(kk) sprintftab(sprintf('%f', kk)), ...
 %         vec, 'UniformOutput', false));
 %     vec2str = @( vec) sprintf( repmat('%-16f', 1, length( vec)), vec);
-    vec2str = @( vec) strjoin( arrayfun(@(kk) sprintf('%-16s', ...
+    vec2str = @( vec) strjoin( arrayfun(@(kk) sprintf('%-25s', ...
         sprintf('%f,', kk)), vec, 'UniformOutput', false));
     % Header string
     %   Mean size
