@@ -53,7 +53,7 @@ cov_prior = (1e-3)^2 * eye( 3);
 %       Frequency
 f_vel    = f_sim;
 %       Noise covariance
-cov_vel  = 0.1^2 * eye( dim_x);
+cov_vel  = 0.05 * eye( dim_x);
 %       Index of first measurement
 idx_vel_0  = 1;
 
@@ -61,7 +61,7 @@ idx_vel_0  = 1;
 %       Frequency
 f_gyro   = f_sim;
 %       Noise covariance
-cov_gyro = (0.005)^2 * eye( dof_x - dim_x); % [rad/s];
+cov_gyro = (0.01) * eye( dof_x - dim_x); % [rad/s];
 %       Index of first measurement
 idx_gyro_0 = 1;
 
